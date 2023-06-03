@@ -19,12 +19,13 @@ def contest_today():
         HTTPError: Failed to connect to Codeforces.
     """
 
-    with urllib.request.urlopen(URL) as url:
+    req = urllib.request.Request(url=URL, headers={'User-Agent':'Mozilla/5.0'})
+    with urllib.request.urlopen(req) as url:
         contests = json.loads(url.read().decode())
 
         # Request was successful
         if contests['status'] == 'OK':
-            
+
             # List of all contest object dictionaries
             contests = contests['result']
             next_contest = contests[0]
@@ -36,17 +37,18 @@ def contest_today():
                     next_contest = contest
                     least_start_time = contest['startTimeSeconds']
 
-            # Convert Unix timestamp to UTC
+            # Convert Unix timestamps to UTC
             contest_time = datetime.utcfromtimestamp(least_start_time)
 
             # Convert UTC to IST
             contest_time += timedelta(hours=5, minutes=30)
+            contest_end = contest_time + timedelta(seconds=next_contest['durationSeconds'])
 
             # If the next contest is today
             if (contest_time.day == datetime.now().day 
                     and contest_time.month == datetime.now().month
                     and contest_time.year == datetime.now().year):
-                return next_contest, contest_time
+                return next_contest, contest_time, contest_end
 
         # Request failed
         else:
