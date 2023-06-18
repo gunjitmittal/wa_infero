@@ -1,6 +1,11 @@
 from message import send_message
 from contest import contest_today
 
+# Dictionary of WhatsApp group IDs to which the message has to be sent
+groups = {
+    'Bot Testing': 'CY0TwLFKmihGxHTD9HjEM0'
+}
+
 # Retrieve information about today's contest
 cont = contest_today()
 
@@ -19,4 +24,5 @@ Time: {contest_time.hour}:{contest_time.minute if contest_time.minute >= 10 else
 
 Don't forget to register if you are participating in the round """ 
 
-    send_message('CY0TwLFKmihGxHTD9HjEM0', message)
+    for group_name, group_id in groups.items():
+        send_message(group_id, message)
